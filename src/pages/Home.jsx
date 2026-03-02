@@ -2,11 +2,27 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/ProductCard';
-import { products } from '@/data/mockData';
+import { productsAPI } from '@/services/api';
+import { useState, useEffect } from 'react';
 import tool4Image from '@/assets/products/tool4.jpeg';
 
 export const Home = () => {
-  const featuredProducts = products.slice(0, 4);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await productsAPI.getAll();
+        setFeaturedProducts(data.slice(0, 4));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <div className="animate-fade-in">
@@ -39,19 +55,27 @@ export const Home = () => {
             <h2 className="text-3xl sm:text-4xl mb-4 tracking-tight">Featured Collection</h2>
             <p className="text-stone-600 tracking-wide">Curated essentials for your daily ritual</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          <div className="text-center mt-12 sm:mt-16">
-            <Link to="/shop">
-              <Button variant="outline" className="border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-white px-8 sm:px-12 py-4 sm:py-6 text-xs sm:text-sm tracking-widest transition-all duration-300">
-                VIEW ALL
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-stone-600 tracking-wide">Loading products...</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              <div className="text-center mt-12 sm:mt-16">
+                <Link to="/shop">
+                  <Button variant="outline" className="border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-white px-8 sm:px-12 py-4 sm:py-6 text-xs sm:text-sm tracking-widest transition-all duration-300">
+                    VIEW ALL
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 

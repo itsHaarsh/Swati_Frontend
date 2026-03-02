@@ -1,14 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProductCard } from '@/components/ProductCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
-import { products, categories } from '@/data/mockData';
+import { productsAPI, categoriesAPI } from '@/services/api';
 
 export const Shop = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [productsData, categoriesData] = await Promise.all([
+          productsAPI.getAll(),
+          categoriesAPI.getAll()
+        ]);
+        setProducts(productsData);
+        setCategories(categoriesData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const filteredProducts = selectedCategory === 'All'
     ? products
     : products.filter(product => product.category === selectedCategory);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white py-8 sm:py-12 md:py-16 flex items-center justify-center">
+        <p className="text-stone-600 tracking-wide">Loading products...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white py-8 sm:py-12 md:py-16 flex items-center justify-center">
+        <p className="text-red-600 tracking-wide">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white py-8 sm:py-12 md:py-16 animate-fade-in">

@@ -1,35 +1,73 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, User, Search, LogOut } from 'lucide-react';
+import { ShoppingBag, User, Search, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import logo from '@/assets/logo/swathi2.png';
+import { useNavigate } from 'react-router-dom';
+import logo from '@/assets/logo/swathi.png';
 
 export const Navbar = () => {
   const { cartCount } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  const handleSearch = async (query) => {
+    setSearchQuery(query);
+    
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearching(true);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/products?filters[$or][0][Name][$containsi]=${query}&filters[$or][1][description][$containsi]=${query}&populate=*`
+      );
+      const data = await response.json();
+      setSearchResults(data.data || []);
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleProductClick = (productId) => {
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults([]);
+    navigate(`/shop/${productId}`);
+  };
 
   const handleLogout = () => {
     logout();
+    setProfileOpen(false);
+    navigate('/');
   };
 
   return (
     <>
       <nav className="sticky top-0 z-50 bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-          <div className="flex justify-between items-center h-16 sm:h-20">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3">
-              <img src={logo} alt="Swathi" className="h-8 sm:h-10 md:h-12 w-auto" />
-              <span className="text-lg sm:text-xl md:text-2xl tracking-wider font-light">SWATHI</span>
+          <div className="flex justify-between items-center h-20 sm:h-24">
+            <Link to="/" className="flex items-center gap-3">
+              <img src={logo} alt="Swathi" className="h-14 sm:h-16 md:h-18 w-auto object-contain" />
+              <span className="text-xl sm:text-2xl md:text-3xl tracking-wider font-light">SWATI</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-8 lg:gap-12">
-              <Link to="/" className="text-xs tracking-widest hover-underline">
+              <Link to="/" className="text-xs tracking-widest hover-underline font-semibold">
                 HOME
               </Link>
-              <Link to="/shop" className="text-xs tracking-widest hover-underline">
+              <Link to="/shop" className="text-xs tracking-widest hover-underline font-semibold">
                 SHOP
               </Link>
             </div>
@@ -45,17 +83,34 @@ export const Navbar = () => {
               </Button>
               
               {isAuthenticated ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-stone-600">Welcome, {user?.firstName || 'User'}</span>
+                <div className="relative">
                   <Button 
                     variant="ghost" 
-                    size="icon" 
-                    className="hover:bg-transparent p-2"
-                    onClick={handleLogout}
-                    title="Logout"
+                    className="hover:bg-transparent p-2 flex items-center gap-2"
+                    onClick={() => setProfileOpen(!profileOpen)}
                   >
-                    <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <User className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden sm:inline text-xs">{user?.FirstName || 'User'}</span>
+                    <ChevronDown className="w-3 h-3" />
                   </Button>
+                  
+                  {profileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border border-stone-200 rounded-lg shadow-lg py-2 z-50">
+                      <Link 
+                        to="/profile" 
+                        className="block px-4 py-2 text-sm hover:bg-stone-100"
+                        onClick={() => setProfileOpen(false)}
+                      >
+                        My Profile
+                      </Link>
+                      <button 
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-stone-100 text-red-600"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <Link to="/login">
@@ -87,19 +142,63 @@ export const Navbar = () => {
         }`}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-20 sm:pt-32">
-          <div className="relative">
+          <div className="relative mb-8">
             <input
               type="text"
               placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
               className="w-full text-2xl sm:text-3xl md:text-4xl border-b-2 border-stone-900 pb-3 sm:pb-4 focus:outline-none bg-transparent"
               autoFocus
             />
             <button
-              onClick={() => setSearchOpen(false)}
+              onClick={() => {
+                setSearchOpen(false);
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
               className="absolute right-0 top-0 text-2xl sm:text-3xl md:text-4xl text-stone-400 hover:text-stone-900 transition-colors"
             >
               ×
             </button>
+          </div>
+
+          {/* Search Results */}
+          <div className="max-h-[60vh] overflow-y-auto">
+            {searching && (
+              <p className="text-center text-stone-500 py-8">Searching...</p>
+            )}
+            
+            {!searching && searchQuery.length >= 2 && searchResults.length === 0 && (
+              <p className="text-center text-stone-500 py-8">No products found</p>
+            )}
+
+            {searchResults.length > 0 && (
+              <div className="grid grid-cols-1 gap-4">
+                {searchResults.map((product) => (
+                  <button
+                    key={product.documentId}
+                    onClick={() => handleProductClick(product.documentId)}
+                    className="flex gap-4 p-4 hover:bg-stone-50 transition-colors text-left border-b border-stone-100"
+                  >
+                    <div className="w-20 h-20 bg-stone-100 flex-shrink-0">
+                      {product.ProductImage && (
+                        <img 
+                          src={`${import.meta.env.VITE_API_URL}${product.ProductImage.url}`} 
+                          alt={product.Name} 
+                          className="w-full h-full object-cover" 
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium mb-1">{product.Name}</h3>
+                      <p className="text-sm text-stone-500 mb-1 line-clamp-2">{product.description}</p>
+                      <p className="text-sm font-medium">₹{product.price}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

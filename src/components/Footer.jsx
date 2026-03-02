@@ -58,7 +58,7 @@ export const Footer = () => {
       <div className="bg-black text-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2 text-xs tracking-wider">
-            <p>© SWATHI, INC. 2026</p>
+            <p>© SWATI, INC. 2026</p>
             <div className="flex gap-8">
               <a href="#" className="hover:opacity-70 transition-opacity">Terms & Conditions</a>
               <a href="#" className="hover:opacity-70 transition-opacity">Privacy Policy</a>

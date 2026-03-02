@@ -24,7 +24,7 @@ export const Cart = () => {
     );
   }
 
-  const shipping = cartTotal > 50 ? 0 : 5.99;
+  const shipping = cartTotal > 500 ? 0 : 50;
   const tax = cartTotal * 0.1;
   const total = cartTotal + shipping + tax;
 
@@ -52,31 +52,33 @@ export const Cart = () => {
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 text-sm">
                 <div className="flex justify-between">
                   <span className="text-stone-600">Subtotal</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  <span>₹{cartTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-stone-600">Shipping</span>
-                  <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                  <span>{shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-stone-600">Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-stone-200 pt-3 sm:pt-4">
                   <div className="flex justify-between text-base sm:text-lg">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₹{total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
 
-              <Button className="w-full bg-stone-900 hover:bg-stone-800 text-white py-4 sm:py-6 text-xs sm:text-sm tracking-widest transition-colors duration-300 mb-3 sm:mb-4">
-                CHECKOUT
-              </Button>
+              <Link to="/checkout" className="block">
+                <Button className="w-full bg-stone-900 hover:bg-stone-800 text-white py-4 sm:py-6 text-xs sm:text-sm tracking-widest transition-colors duration-300 mb-3 sm:mb-4">
+                  CHECKOUT
+                </Button>
+              </Link>
 
               {shipping > 0 && (
                 <p className="text-center text-xs text-stone-500 tracking-wide">
-                  Free shipping on orders over $50
+                  Free shipping on orders over ₹500
                 </p>
               )}
             </div>

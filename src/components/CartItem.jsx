@@ -7,11 +7,13 @@ export const CartItem = ({ item }) => {
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 py-6 sm:py-8 border-b border-stone-200">
-      <img
-        src={item.image}
-        alt={item.name}
-        className="w-full sm:w-24 md:w-32 h-32 sm:h-32 md:h-40 object-cover bg-stone-100"
-      />
+      <div className="w-full sm:w-24 md:w-32 h-32 sm:h-32 md:h-40 bg-stone-100 flex-shrink-0">
+        <img
+          src={item.image}
+          alt={item.name}
+          className="w-full h-full object-contain"
+        />
+      </div>
       
       <div className="flex-1 flex flex-col justify-between">
         <div>
@@ -41,7 +43,7 @@ export const CartItem = ({ item }) => {
           </div>
           
           <div className="flex items-center gap-3 sm:hidden">
-            <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+            <p className="text-sm font-medium">₹{(item.price * item.quantity).toFixed(2)}</p>
             <Button
               variant="ghost"
               size="icon"
@@ -63,7 +65,7 @@ export const CartItem = ({ item }) => {
         >
           <X className="w-4 h-4" />
         </Button>
-        <p className="text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+        <p className="text-sm">₹{(item.price * item.quantity).toFixed(2)}</p>
       </div>
     </div>
   );

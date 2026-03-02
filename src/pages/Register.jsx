@@ -4,11 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
-import logo from '@/assets/logo/swathi2.png';
+import { Eye, EyeOff } from 'lucide-react';
+import logo from '@/assets/logo/swathi.png';
 
 export const Register = () => {
   const { register, loading } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -17,14 +20,27 @@ export const Register = () => {
     password: '',
     confirmPassword: '',
     phoneNumber: '',
+    agreeOrNot: false,
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const validatePassword = (password) => {
+    const hasCapital = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    return hasCapital && hasNumber && hasSymbol && password.length >= 8;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    
+    if (!validatePassword(formData.password)) {
+      setError('Password must contain at least 8 characters, 1 capital letter, 1 number, and 1 symbol');
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -41,8 +57,9 @@ export const Register = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    const fieldValue = type === 'checkbox' ? checked : value;
+    setFormData({ ...formData, [name]: fieldValue });
     
     // Auto-set username to email
     if (name === 'email') {
@@ -55,8 +72,8 @@ export const Register = () => {
       <div className="max-w-md w-full">
         <div className="text-center mb-8 sm:mb-12">
           <Link to="/" className="inline-flex items-center gap-2 sm:gap-3">
-            <img src={logo} alt="Swathi" className="h-8 sm:h-10 md:h-12 w-auto" />
-            <span className="text-lg sm:text-xl md:text-2xl tracking-wider font-light">SWATHI</span>
+            <img src={logo} alt="Swathi" className="h-12 sm:h-14 md:h-16 w-auto" />
+            <span className="text-lg sm:text-xl md:text-2xl tracking-wider font-light">SWATI</span>
           </Link>
         </div>
 
@@ -134,34 +151,60 @@ export const Register = () => {
 
             <div>
               <Label htmlFor="password" className="text-xs tracking-widest">PASSWORD</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                className="mt-2 border-stone-300 focus:border-stone-900 transition-colors h-12"
-                required
-              />
+              <div className="relative mt-2">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="border-stone-300 focus:border-stone-900 transition-colors h-12 pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <p className="text-xs text-stone-500 mt-1">Min 8 chars, 1 capital, 1 number, 1 symbol</p>
             </div>
 
             <div>
               <Label htmlFor="confirmPassword" className="text-xs tracking-widest">CONFIRM PASSWORD</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="mt-2 border-stone-300 focus:border-stone-900 transition-colors h-12"
-                required
-              />
+              <div className="relative mt-2">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="border-stone-300 focus:border-stone-900 transition-colors h-12 pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900"
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <div className="flex items-start gap-2 text-xs sm:text-sm">
-              <input type="checkbox" className="mt-1 border-stone-300" required />
+              <input 
+                type="checkbox" 
+                name="agreeOrNot"
+                checked={formData.agreeOrNot}
+                onChange={handleChange}
+                className="mt-1 border-stone-300" 
+                required 
+              />
               <span className="text-stone-600 leading-relaxed">
                 I agree to the{' '}
                 <a href="#" className="text-stone-900 hover:text-stone-600 transition-colors">

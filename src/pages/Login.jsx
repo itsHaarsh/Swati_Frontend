@@ -4,11 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
-import logo from '@/assets/logo/swathi2.png';
+import { Eye, EyeOff } from 'lucide-react';
+import logo from '@/assets/logo/swathi.png';
 
 export const Login = () => {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
@@ -33,8 +35,8 @@ export const Login = () => {
       <div className="max-w-md w-full">
         <div className="text-center mb-8 sm:mb-12">
           <Link to="/" className="inline-flex items-center gap-2 sm:gap-3">
-            <img src={logo} alt="Swathi" className="h-8 sm:h-10 md:h-12 w-auto" />
-            <span className="text-lg sm:text-xl md:text-2xl tracking-wider font-light">SWATHI</span>
+            <img src={logo} alt="Swathi" className="h-12 sm:h-14 md:h-16 w-auto" />
+            <span className="text-lg sm:text-xl md:text-2xl tracking-wider font-light">SWATI</span>
           </Link>
         </div>
 
@@ -67,16 +69,25 @@ export const Login = () => {
 
             <div>
               <Label htmlFor="password" className="text-xs tracking-widest">PASSWORD</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                className="mt-2 border-stone-300 focus:border-stone-900 transition-colors h-12"
-                required
-              />
+              <div className="relative mt-2">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="border-stone-300 focus:border-stone-900 transition-colors h-12 pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 text-sm">
@@ -84,9 +95,9 @@ export const Login = () => {
                 <input type="checkbox" className="border-stone-300" />
                 <span className="text-stone-600">Remember me</span>
               </label>
-              <a href="#" className="text-stone-900 hover:text-stone-600 transition-colors">
+              <Link to="/forgot-password" className="text-stone-900 hover:text-stone-600 transition-colors">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <Button

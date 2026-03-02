@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '@/services/api';
 
 const AuthContext = createContext();
 
@@ -11,21 +12,25 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   const login = async (credentials) => {
     setLoading(true);
     try {
-      // Mock login - always succeeds
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const mockUser = {
-        id: 'mock-user-1',
-        email: credentials.email,
-        firstName: 'Mock',
-        lastName: 'User'
-      };
-      setUser(mockUser);
+      const response = await authAPI.login(credentials);
+      setUser(response.user);
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -37,14 +42,8 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     setLoading(true);
     try {
-      // Mock registration - always succeeds
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const mockUser = {
-        id: 'mock-user-' + Date.now(),
-        ...userData
-      };
-      setUser(mockUser);
-      return { success: true };
+      const response = await authAPI.register(userData);
+      return { success: true, data: response };
     } catch (error) {
       return { success: false, error: error.message };
     } finally {
@@ -56,11 +55,25 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateProfile = async (userData) => {
+    setLoading(true);
+    try {
+      const response = await authAPI.updateProfile(userData);
+      setUser(response.user);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     login,
     register,
     logout,
+    updateProfile,
     loading,
     isAuthenticated: !!user
   };

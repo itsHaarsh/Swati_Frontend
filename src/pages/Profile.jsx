@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, MapPin, Heart, Package, Settings, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,23 +7,44 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
 
 export const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: user?.mobile || '',
-    address: '',
+    firstName: user?.FirstName || '',
+    lastName: user?.LastName || '',
+    email: user?.Email || '',
+    phone: user?.Number || '',
   });
+  const [message, setMessage] = useState('');
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = () => {
-    // TODO: Implement save functionality with backend
-    setIsEditing(false);
+  const handleSave = async () => {
+    setMessage('');
+    const result = await updateProfile({
+      documentId: user?.documentId,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone,
+    });
+    
+    if (result.success) {
+      setMessage('Profile updated successfully!');
+      setIsEditing(false);
+      setTimeout(() => setMessage(''), 3000);
+    } else {
+      setMessage('Failed to update profile');
+    }
   };
 
   const tabs = [
@@ -50,9 +71,9 @@ export const Profile = () => {
               </div>
               <div className="text-center sm:text-left">
                 <h1 className="text-2xl sm:text-3xl font-light tracking-tight">
-                  {user?.name || 'User Profile'}
+                  {user?.FirstName} {user?.LastName}
                 </h1>
-                <p className="text-stone-300 mt-1">{user?.email}</p>
+                <p className="text-stone-300 mt-1">{user?.Email}</p>
               </div>
             </div>
           </div>
@@ -96,13 +117,31 @@ export const Profile = () => {
                     </Button>
                   </div>
 
+                  {message && (
+                    <div className="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded text-sm">
+                      {message}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <Label htmlFor="name" className="text-xs tracking-widest">FULL NAME</Label>
+                      <Label htmlFor="firstName" className="text-xs tracking-widest">FIRST NAME</Label>
                       <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="mt-2 h-12"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="lastName" className="text-xs tracking-widest">LAST NAME</Label>
+                      <Input
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
                         onChange={handleInputChange}
                         disabled={!isEditing}
                         className="mt-2 h-12"
@@ -128,18 +167,6 @@ export const Profile = () => {
                         id="phone"
                         name="phone"
                         value={formData.phone}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className="mt-2 h-12"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="address" className="text-xs tracking-widest">ADDRESS</Label>
-                      <Input
-                        id="address"
-                        name="address"
-                        value={formData.address}
                         onChange={handleInputChange}
                         disabled={!isEditing}
                         className="mt-2 h-12"
@@ -196,12 +223,14 @@ export const Profile = () => {
                   <div className="space-y-6">
                     <div className="border border-stone-200 rounded-lg p-6">
                       <h3 className="text-lg tracking-tight mb-4">Security</h3>
-                      <Button
-                        variant="outline"
-                        className="text-xs tracking-widest"
-                      >
-                        CHANGE PASSWORD
-                      </Button>
+                      <Link to="/forgot-password">
+                        <Button
+                          variant="outline"
+                          className="text-xs tracking-widest"
+                        >
+                          CHANGE PASSWORD
+                        </Button>
+                      </Link>
                     </div>
 
                     <div className="border border-stone-200 rounded-lg p-6">
@@ -225,7 +254,7 @@ export const Profile = () => {
                     <div className="border border-red-200 rounded-lg p-6">
                       <h3 className="text-lg tracking-tight mb-4 text-red-600">Danger Zone</h3>
                       <Button
-                        onClick={logout}
+                        onClick={handleLogout}
                         variant="outline"
                         className="text-xs tracking-widest border-red-300 text-red-600 hover:bg-red-50"
                       >
