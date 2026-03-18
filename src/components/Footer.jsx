@@ -21,7 +21,7 @@ export const Footer = () => {
             <div>
               <h3 className="text-sm tracking-wider mb-6">ABOUT</h3>
               <ul className="space-y-3 text-sm text-stone-600">
-                <li><a href="#" className="hover-underline transition-colors">Our Story</a></li>
+                <li><Link to="/about" className="hover-underline transition-colors">Our Story</Link></li>
                 <li><a href="#" className="hover-underline transition-colors">Ingredients</a></li>
                 <li><a href="#" className="hover-underline transition-colors">Sustainability</a></li>
               </ul>

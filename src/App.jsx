@@ -15,6 +15,7 @@ import { ResetPassword } from '@/pages/ResetPassword';
 import { Checkout } from '@/pages/Checkout';
 import { OrderSuccess } from '@/pages/OrderSuccess';
 import { Orders } from '@/pages/Orders';
+import { About } from '@/pages/about.jsx';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/order-success/:orderId" element={<OrderSuccess />} />
                 <Route path="/orders" element={<Orders />} />
+                <Route path="/about" element={<About />} />
               </Routes>
             </main>
             <Footer />

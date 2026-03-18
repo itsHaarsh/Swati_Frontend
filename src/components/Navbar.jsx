@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, User, Search, ChevronDown } from 'lucide-react';
+import { ShoppingBag, User, Search, ChevronDown, Menu, X } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSearch = async (query) => {
     setSearchQuery(query);
@@ -64,12 +65,9 @@ export const Navbar = () => {
             </Link>
 
             <div className="hidden md:flex items-center gap-8 lg:gap-12">
-              <Link to="/" className="text-xs tracking-widest hover-underline font-semibold">
-                HOME
-              </Link>
-              <Link to="/shop" className="text-xs tracking-widest hover-underline font-semibold">
-                SHOP
-              </Link>
+              <Link to="/" className="text-xs tracking-widest hover-underline font-semibold">HOME</Link>
+              <Link to="/shop" className="text-xs tracking-widest hover-underline font-semibold">SHOP</Link>
+              <Link to="/about" className="text-xs tracking-widest hover-underline font-semibold">ABOUT</Link>
             </div>
 
             <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
@@ -130,10 +128,42 @@ export const Navbar = () => {
                   )}
                 </Button>
               </Link>
+
+              {/* Mobile hamburger */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden hover:bg-transparent p-2"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu Drawer */}
+      <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
+        mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+      }`}>
+        <div className="absolute inset-0 bg-black/20" onClick={() => setMobileMenuOpen(false)} />
+        <div className={`absolute top-0 left-0 h-full w-72 bg-white shadow-2xl transition-transform duration-300 ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          <div className="flex items-center justify-between px-6 h-20 border-b border-stone-100">
+            <span className="text-lg tracking-widest font-light">MENU</span>
+            <button onClick={() => setMobileMenuOpen(false)}>
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <nav className="px-6 py-8 flex flex-col gap-6">
+            <Link to="/" className="text-sm tracking-widest hover-underline font-semibold" onClick={() => setMobileMenuOpen(false)}>HOME</Link>
+            <Link to="/shop" className="text-sm tracking-widest hover-underline font-semibold" onClick={() => setMobileMenuOpen(false)}>SHOP</Link>
+            <Link to="/about" className="text-sm tracking-widest hover-underline font-semibold" onClick={() => setMobileMenuOpen(false)}>ABOUT</Link>
+          </nav>
+        </div>
+      </div>
 
       {/* Search Overlay */}
       <div 
