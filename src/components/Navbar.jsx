@@ -58,9 +58,9 @@ export const Navbar = () => {
     <>
       <nav className="sticky top-0 z-50 bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-          <div className="flex justify-between items-center h-20 sm:h-24">
-            <Link to="/" className="flex items-center gap-3">
-              <img src={logo} alt="Swathi" className="h-14 sm:h-16 md:h-18 w-auto object-contain" />
+          <div className="flex justify-between items-center h-24 sm:h-28">
+            <Link to="/" className="flex items-center gap-2">
+              <img src={logo} alt="Swathi" className="w-16 sm:w-20 md:w-24 h-auto object-contain" />
               <span className="text-xl sm:text-2xl md:text-3xl tracking-wider font-light">SWATI</span>
             </Link>
 
@@ -151,7 +151,7 @@ export const Navbar = () => {
         <div className={`absolute top-0 left-0 h-full w-72 bg-white shadow-2xl transition-transform duration-300 ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
-          <div className="flex items-center justify-between px-6 h-20 border-b border-stone-100">
+          <div className="flex items-center justify-between px-6 h-24 border-b border-stone-100">
             <span className="text-lg tracking-widest font-light">MENU</span>
             <button onClick={() => setMobileMenuOpen(false)}>
               <X className="w-5 h-5" />

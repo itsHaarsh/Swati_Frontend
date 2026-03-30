@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Leaf, FlaskConical, Heart, Award } from 'lucide-react';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import img1 from '@/assets/about/WhatsApp Image 2026-01-18 at 7.27.28 PM (2).jpeg';
 import img2 from '@/assets/about/WhatsApp Image 2026-01-18 at 7.27.29 PM (2).jpeg';
@@ -23,6 +25,23 @@ const gallery = [
 ];
 
 export const About = () => {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        setTimeout(() => {
+          const navHeight = document.querySelector('nav')?.offsetHeight || 96;
+          const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }, 150);
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [hash]);
+
   return (
     <div className="animate-fade-in">
 
@@ -43,7 +62,7 @@ export const About = () => {
       </section>
 
       {/* Story Section */}
-      <section className="py-14 sm:py-20 md:py-28 bg-white">
+      <section id="our-story" className="py-14 sm:py-20 md:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
             <p className="text-xs tracking-[0.3em] text-stone-400 mb-4 uppercase">The Beginning</p>
@@ -87,7 +106,7 @@ export const About = () => {
       </section>
 
       {/* Values */}
-      <section className="py-14 sm:py-20 md:py-28 bg-stone-50">
+      <section id="our-values" className="py-14 sm:py-20 md:py-28 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
           <div className="text-center mb-16">
             <p className="text-xs tracking-[0.3em] text-stone-400 mb-3 uppercase">What We Stand For</p>
@@ -108,7 +127,7 @@ export const About = () => {
       </section>
 
       {/* Gallery */}
-      <section className="py-14 sm:py-20 md:py-28 bg-white">
+      <section id="our-world" className="py-14 sm:py-20 md:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
           <div className="text-center mb-10 sm:mb-16">
             <p className="text-xs tracking-[0.3em] text-stone-400 mb-3 uppercase">Behind the Brand</p>
@@ -137,7 +156,7 @@ export const About = () => {
       </section>
 
       {/* Founder Quote */}
-      <section className="py-14 sm:py-20 md:py-28 bg-stone-900 text-white">
+      <section id="founder" className="py-14 sm:py-20 md:py-28 bg-stone-900 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 text-center">
           <p className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight leading-relaxed mb-8">
             "We remain committed to our core values and are dedicated to bringing the goodness of nature to the world."

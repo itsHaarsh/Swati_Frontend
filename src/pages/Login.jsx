@@ -35,7 +35,7 @@ export const Login = () => {
       <div className="max-w-md w-full">
         <div className="text-center mb-8 sm:mb-12">
           <Link to="/" className="inline-flex items-center gap-2 sm:gap-3">
-            <img src={logo} alt="Swathi" className="h-12 sm:h-14 md:h-16 w-auto" />
+            <img src={logo} alt="Swathi" className="w-20 sm:w-24 h-auto" />
             <span className="text-lg sm:text-xl md:text-2xl tracking-wider font-light">SWATI</span>
           </Link>
         </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from 'react-router-dom';
 import { Package } from 'lucide-react';
+import { fetchAllPages } from '@/services/api';
 
 export const Orders = () => {
   const { user } = useAuth();
@@ -11,11 +12,11 @@ export const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/orders?filters[user][id][$eq]=${user.id}&populate=*&sort=orderDate:desc`
+        const API_URL = import.meta.env.VITE_API_URL;
+        const allOrders = await fetchAllPages(
+          `${API_URL}/api/orders?filters[user][id][$eq]=${user.id}&populate=*&sort=orderDate:desc`
         );
-        const data = await response.json();
-        setOrders(data.data || []);
+        setOrders(allOrders);
       } catch (error) {
         console.error('Failed to fetch orders');
       } finally {

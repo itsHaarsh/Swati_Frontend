@@ -90,21 +90,17 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Newsletter */}
+      {/* Contact */}
       <section className="py-12 sm:py-16 md:py-24 bg-white">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl sm:text-3xl mb-4 sm:mb-6 tracking-tight">Stay Connected</h2>
-          <p className="text-stone-600 mb-6 sm:mb-8 tracking-wide">Subscribe for exclusive offers and wellness tips</p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Email address"
-              className="flex-1 px-4 sm:px-6 py-3 sm:py-4 border border-stone-300 focus:outline-none focus:border-stone-900 transition-colors text-sm sm:text-base"
-            />
-            <Button className="bg-stone-900 h-auto hover:bg-stone-800 text-white px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm tracking-widest transition-colors duration-300 whitespace-nowrap">
-              SUBSCRIBE
-            </Button>
-          </div>
+          <p className="text-stone-600 mb-4 tracking-wide">Have questions or need help? Reach us at</p>
+          <a
+            href="mailto:swatiharbalcosmatic@gmail.com"
+            className="text-stone-900 text-base sm:text-lg tracking-wide hover:underline"
+          >
+            swatiharbalcosmatic@gmail.com
+          </a>
         </div>
       </section>
     </div>

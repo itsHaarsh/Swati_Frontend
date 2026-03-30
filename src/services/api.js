@@ -1,5 +1,23 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
+export const fetchAllPages = async (url) => {
+  let page = 1;
+  let allData = [];
+  let pageCount = 1;
+
+  do {
+    const separator = url.includes('?') ? '&' : '?';
+    const response = await fetch(`${url}${separator}pagination[page]=${page}&pagination[pageSize]=100`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'Failed to fetch data');
+    allData = allData.concat(data.data);
+    pageCount = data.meta?.pagination?.pageCount ?? 1;
+    page++;
+  } while (page <= pageCount);
+
+  return allData;
+};
+
 export const authAPI = {
   login: async (credentials) => {
     try {
@@ -94,14 +112,9 @@ export const authAPI = {
 export const productsAPI = {
   getAll: async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products?populate=*`);
-      const data = await response.json();
+      const allProducts = await fetchAllPages(`${API_URL}/api/products?populate=*`);
 
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to fetch products');
-      }
-
-      return data.data.map(product => ({
+      return allProducts.map(product => ({
         id: product.id,
         documentId: product.documentId,
         name: product.Name,
@@ -151,14 +164,8 @@ export const productsAPI = {
 export const categoriesAPI = {
   getAll: async () => {
     try {
-      const response = await fetch(`${API_URL}/api/categories`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to fetch categories');
-      }
-
-      return [{ id: 0, name: 'All' }, ...data.data.map(cat => ({ id: cat.id, name: cat.name }))];
+      const allCategories = await fetchAllPages(`${API_URL}/api/categories`);
+      return [{ id: 0, name: 'All' }, ...allCategories.map(cat => ({ id: cat.id, name: cat.name }))];
     } catch (error) {
       throw error;
     }
